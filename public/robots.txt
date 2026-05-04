@@ -5,11 +5,14 @@ Allow: /
 Disallow: /src/
 Disallow: /.vite/
 
-# Sitemaps
-Sitemap: https://bakano.ec/sitemap.xml
+# Sitemap
+Sitemap: https://luisapitabejarano.com/sitemap.xml
 
-# LLM crawlers — permitidos para indexación en AI
+# ─── LLM Crawlers — permitidos para indexación en IA ───────────────────────
 User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
 Allow: /
 
 User-agent: ClaudeBot
@@ -19,6 +22,9 @@ User-agent: anthropic-ai
 Allow: /
 
 User-agent: Google-Extended
+Allow: /
+
+User-agent: Gemini
 Allow: /
 
 User-agent: PerplexityBot
@@ -32,3 +38,13 @@ Allow: /
 
 User-agent: CCBot
 Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# ─── LLM Context Files ──────────────────────────────────────────────────────
+# Archivo optimizado para modelos de lenguaje grande
+# https://luisapitabejarano.com/llms.txt

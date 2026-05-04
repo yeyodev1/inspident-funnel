@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- Página principal -->
+  <!-- Página principal — Landing VSL -->
   <url>
-    <loc>https://bakano.ec/</loc>
-    <lastmod>2026-03-05</lastmod>
+    <loc>https://luisapitabejarano.com/</loc>
+    <lastmod>2026-05-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="es-EC" href="https://bakano.ec/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://bakano.ec/"/>
+    <xhtml:link rel="alternate" hreflang="es-EC" href="https://luisapitabejarano.com/"/>
+    <xhtml:link rel="alternate" hreflang="es"    href="https://luisapitabejarano.com/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://luisapitabejarano.com/"/>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dkosgkjpq/image/upload/w_1200,h_630,c_fill,g_face,q_auto,f_auto/luisa-pita/luisa-11.jpg</image:loc>
+      <image:title>Luisa Pita Bejarano — Coach de Transformación Corporal</image:title>
+      <image:caption>Programa Baja 8 en 8 semanas sin efecto rebote para mujeres ocupadas</image:caption>
+    </image:image>
   </url>
 
-  <!-- Herramientas -->
+  <!-- Confirmación de sesión agendada -->
   <url>
-    <loc>https://bakano.ec/herramientas</loc>
-    <lastmod>2026-03-06</lastmod>
+    <loc>https://luisapitabejarano.com/cita-confirmada</loc>
+    <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="es-EC" href="https://bakano.ec/herramientas"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://bakano.ec/herramientas"/>
+    <priority>0.4</priority>
   </url>
 
   <!-- Política de Privacidad -->
   <url>
-    <loc>https://bakano.ec/politicas-privacidad</loc>
-    <lastmod>2026-03-05</lastmod>
+    <loc>https://luisapitabejarano.com/politicas-privacidad</loc>
+    <lastmod>2026-05-04</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <priority>0.2</priority>
   </url>
 
   <!-- Aviso Legal -->
   <url>
-    <loc>https://bakano.ec/aviso-legal</loc>
-    <lastmod>2026-03-05</lastmod>
+    <loc>https://luisapitabejarano.com/aviso-legal</loc>
+    <lastmod>2026-05-04</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <priority>0.2</priority>
   </url>
 
 </urlset>
