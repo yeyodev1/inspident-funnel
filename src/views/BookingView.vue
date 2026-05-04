@@ -5,11 +5,11 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const iframeHeight = ref(1100)
 
-const BASE_URL = 'https://api.leadconnectorhq.com/widget/booking/pCSBd5Awq8uAZ3XSlv5H'
+const BASE_URL = 'https://api.leadconnectorhq.com/widget/booking/Dqe1lrB2Ieejmm25uJSP'
 
 const calendarUrl = computed(() => {
   try {
-    const stored = localStorage.getItem('lpb_contact')
+    const stored = localStorage.getItem('ins_contact')
     if (!stored) return BASE_URL
     const { nombre, email, phone } = JSON.parse(stored)
     const params = new URLSearchParams()
@@ -25,7 +25,7 @@ const calendarUrl = computed(() => {
 
 const onMessage = (event: MessageEvent) => {
   if (Array.isArray(event.data) && event.data[0] === 'msgsndr-booking-complete') {
-    localStorage.setItem('lpb_booked_at', String(Date.now()))
+    localStorage.setItem('ins_booked_at', String(Date.now()))
     router.push('/cita-confirmada')
   }
   if (event.data?.type === 'booking-app' && typeof event.data.height === 'number') {
@@ -51,55 +51,54 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
 <template>
   <div class="booking">
 
-    <!-- TOP BAR -->
+    <!-- TOPBAR -->
     <header class="booking__topbar">
-      <h2 class="booking__logo-text">LUISA PITA BEJARANO</h2>
+      <span class="booking__logo-text">INSPIDENT</span>
+      <div class="booking__stepper" aria-label="Progreso de reserva">
+        <span class="booking__step booking__step--done">
+          <i class="fa-solid fa-check"></i> Datos
+        </span>
+        <span class="booking__step-sep">›</span>
+        <span class="booking__step booking__step--active">Agenda</span>
+      </div>
     </header>
 
     <main class="booking__main">
 
-      <!-- Stepper -->
-      <div class="stepper" aria-label="Paso 2 de 2">
-        <div class="stepper__track">
-          <div class="stepper__step stepper__step--done">
-            <div class="stepper__circle">
-              <i class="fa-solid fa-check" aria-hidden="true"></i>
-            </div>
-            <span class="stepper__label">Video</span>
-          </div>
-          <div class="stepper__line stepper__line--done"></div>
-          <div class="stepper__step stepper__step--active">
-            <div class="stepper__circle">2</div>
-            <span class="stepper__label">Agenda</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Heading -->
       <section class="booking__heading">
-        <p class="booking__eyebrow">
-          <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
-          Casi lista
-        </p>
+        <span class="booking__eyebrow">
+          <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+          Paso final
+        </span>
         <h1 class="booking__title">
           Elige el horario de tu
-          <span class="booking__title-accent">sesión de transformación</span>
+          <span class="booking__title-accent">consulta dental</span>
         </h1>
         <p class="booking__subtitle">
-          Una sesión personalizada con Luisa Pita para evaluar tu situación y diseñar juntas tu plan de 8 semanas.
+          Selecciona el día y hora que mejor te convenga. Nuestros especialistas están listos para atenderte.
         </p>
       </section>
+
+      <!-- Deposit notice -->
+      <div class="booking__deposit-notice">
+        <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+        <div>
+          <strong>Garantía de reserva: $10 con tarjeta</strong>
+          <p>Se solicita al confirmar tu cita. Este valor se descuenta de tu tratamiento el día de la visita.</p>
+        </div>
+      </div>
 
       <!-- Calendar iframe -->
       <div class="calendar__wrap">
         <iframe
           :src="calendarUrl"
           :style="{ height: iframeHeight + 'px' }"
-          title="Agenda tu sesión con Luisa Pita Bejarano"
+          title="Agenda tu cita en Inspident"
           class="calendar__iframe"
           frameborder="0"
           scrolling="no"
-          id="pCSBd5Awq8uAZ3XSlv5H_1"
+          id="Dqe1lrB2Ieejmm25uJSP_1"
         ></iframe>
       </div>
 
@@ -111,7 +110,7 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
         <RouterLink to="/politicas-privacidad">Política de Privacidad</RouterLink>
         <RouterLink to="/aviso-legal">Aviso Legal</RouterLink>
       </nav>
-      <p class="booking__footer-copy">© {{ new Date().getFullYear() }} LUISA PITA BEJARANO. Todos los derechos reservados.</p>
+      <p class="booking__footer-copy">© {{ new Date().getFullYear() }} INSPIDENT. Todos los derechos reservados.</p>
     </footer>
 
   </div>
@@ -123,136 +122,92 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
 
 .booking {
   min-height: 100vh;
-  background: #ffffff;
-  color: colors.$OS-DARK;
   display: flex;
   flex-direction: column;
-}
-
-.booking__topbar {
   background: #ffffff;
-  border-bottom: 1px solid #D1FAE5;
-  padding: 0.9rem 1.5rem;
-  display: flex;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 8px rgba(22, 199, 132, 0.05);
-}
+  color: colors.$INS-DARK;
+  font-family: fonts.$font-secondary;
 
-.booking__logo-text {
-  font-family: fonts.$font-principal;
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 0.05em;
-  color: colors.$OS-DARK;
-  margin: 0;
-}
-
-.booking__main {
-  flex: 1;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
-  width: 100%;
-}
-
-// ── Stepper ──────────────────────────────────────────────────────────────────
-.stepper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-
-  &__track {
+  &__topbar {
     display: flex;
     align-items: center;
-    gap: 0;
+    justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid #EFF6FF;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  &__logo-text {
+    @include fonts.heading-font(800);
+    font-size: 1.1rem;
+    color: colors.$INS-BLUE;
+    letter-spacing: 0.04em;
+  }
+
+  &__stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: fonts.$font-interface;
+    font-size: 0.78rem;
+    font-weight: 600;
   }
 
   &__step {
+    color: #A0B5CC;
+    &--done { color: #34D399; }
+    &--active { color: colors.$INS-BLUE; font-weight: 700; }
+    i { margin-right: 0.2rem; }
+  }
+
+  &__step-sep { color: #CBD5E0; }
+
+  &__main {
+    flex: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
-  &__circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: fonts.$font-interface;
-    font-size: 0.85rem;
-    font-weight: 800;
-    border: 2px solid #D0DBE8;
-    color: #D0DBE8;
-    transition: all 0.3s ease;
-
-    .stepper__step--done & {
-      background: colors.$OS-BLUE;
-      border-color: colors.$OS-BLUE;
-      color: #ffffff;
-    }
-
-    .stepper__step--active & {
-      background: colors.$OS-RED;
-      border-color: colors.$OS-RED;
-      color: #ffffff;
-    }
-  }
-
-  &__label {
-    font-family: fonts.$font-interface;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: #B0C0D5;
-
-    .stepper__step--done & { color: colors.$OS-BLUE; }
-    .stepper__step--active & { color: colors.$OS-DARK; }
-  }
-
-  &__line {
-    width: 60px;
-    height: 2px;
-    background: #E0EAF5;
-    border-radius: 2px;
-    margin: 0 0.5rem;
-    margin-bottom: 1.1rem;
-
-    &--done { background: colors.$OS-BLUE; }
+    gap: 1.5rem;
+    @media (min-width: 768px) { padding: 2.5rem 2rem 3rem; }
   }
 }
 
-// ── Heading ──────────────────────────────────────────────────────────────────
+.booking__heading {
+  text-align: center;
+}
+
 .booking__eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  background: rgba(colors.$INS-BLUE, 0.08);
+  border: 1px solid rgba(colors.$INS-BLUE, 0.18);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  color: colors.$INS-BLUE;
   font-family: fonts.$font-interface;
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: colors.$OS-RED;
-  margin: 0 0 0.75rem;
-  i { font-size: 0.75rem; }
+  margin-bottom: 0.85rem;
+  i { font-size: 0.72rem; }
 }
-
-.booking__heading { margin-bottom: 1.75rem; }
 
 .booking__title {
   @include fonts.heading-font(800);
   font-size: clamp(1.7rem, 4vw, 2.4rem);
-  color: colors.$OS-DARK;
+  color: colors.$INS-DARK;
   margin: 0 0 0.6rem;
   letter-spacing: -0.025em;
   line-height: 1.2;
-
-  &-accent { color: colors.$OS-RED; }
+  &-accent { color: colors.$INS-BLUE; }
 }
 
 .booking__subtitle {
@@ -262,12 +217,43 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
   margin: 0;
 }
 
+// ── Deposit notice ────────────────────────────────────────────────────────────
+.booking__deposit-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  i {
+    color: colors.$INS-BLUE;
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  strong {
+    display: block;
+    font-family: fonts.$font-interface;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: colors.$INS-DARK;
+    margin-bottom: 0.2rem;
+  }
+  p {
+    font-size: 0.82rem;
+    color: #4A5F7A;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
 // ── Calendar ─────────────────────────────────────────────────────────────────
 .calendar__wrap {
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #D1FAE5;
-  box-shadow: 0 4px 24px rgba(22, 199, 132, 0.07);
+  border: 1px solid #DBEAFE;
+  box-shadow: 0 4px 24px rgba(30, 64, 175, 0.06);
 }
 
 .calendar__iframe {
@@ -279,7 +265,7 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
 // ── Footer ───────────────────────────────────────────────────────────────────
 .booking__footer {
   padding: 1.5rem;
-  border-top: 1px solid #F0F4FB;
+  border-top: 1px solid #EFF6FF;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -289,18 +275,9 @@ onUnmounted(() => window.removeEventListener('message', onMessage))
   &-links {
     display: flex;
     gap: 1.5rem;
-    a {
-      font-size: 0.76rem;
-      color: #B0C0D5;
-      text-decoration: none;
-      &:hover { color: colors.$OS-NAVY; }
-    }
+    a { font-size: 0.76rem; color: #B0C0D5; text-decoration: none; &:hover { color: colors.$INS-DARK; } }
   }
 
-  &-copy {
-    font-size: 0.72rem;
-    color: #C8D8ED;
-    margin: 0;
-  }
+  &-copy { font-size: 0.72rem; color: #C8D8ED; margin: 0; }
 }
 </style>

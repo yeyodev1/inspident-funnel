@@ -4,24 +4,22 @@ import { ref } from 'vue'
 export interface BkContact {
   nombre: string
   apellido: string
-  negocio: string
+  negocio?: string
   email: string
   telefono: string
   timestamp?: number
 }
 
-const STORAGE_KEY = 'lpb_contact'
+const STORAGE_KEY = 'ins_contact'
 
 export const useContactStore = defineStore('contact', () => {
   const contact = ref<BkContact>({
     nombre: '',
     apellido: '',
-    negocio: '',
     email: '',
     telefono: '',
   })
 
-  // Hidrata desde localStorage al iniciar
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored) {
     try {
@@ -39,7 +37,7 @@ export const useContactStore = defineStore('contact', () => {
   }
 
   function clear() {
-    contact.value = { nombre: '', apellido: '', negocio: '', email: '', telefono: '' }
+    contact.value = { nombre: '', apellido: '', email: '', telefono: '' }
     localStorage.removeItem(STORAGE_KEY)
   }
 

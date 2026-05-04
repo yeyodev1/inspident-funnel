@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { parsePhoneNumberFromString, getCountries, getCountryCallingCode, AsYouType } from 'libphonenumber-js'
-import { useRouter } from 'vue-router'
 import { getStoredFbParams } from '@/utils/fbclid'
-const router = useRouter()
 
 const props = defineProps<{ open: boolean }>()
-const emit = defineEmits<{ (e: 'close'): void }>()
+const emit = defineEmits<{ (e: 'close'): void; (e: 'registered'): void }>()
 
 // ── Países con emoji flag ─────────────────────────────────────────────────────
 interface Country { code: string; name: string; dial: string; flag: string }
@@ -154,33 +152,32 @@ const handleSubmit = async () => {
     ...getStoredFbParams(),
   }
 
-  console.info('[LuisaPita Registro]', payload)
+  console.info('[Inspident Registro]', payload)
 
   await fetch(import.meta.env.VITE_WEBHOOK_REGISTRO, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ...payload,
-      source: 'luisa-pita-web',
+      source: 'inspident-web',
     }),
   }).catch(() => {})
 
   // Meta Pixel — evento Lead (deduplicado con CAPI via event_id)
   ;(window as any).fbq?.('track', 'Lead',
-    { content_name: 'programa-lpb' },
+    { content_name: 'consulta-dental' },
     { eventID: leadEventId }
   )
 
   submitting.value = false
-  localStorage.setItem('lpb_contact', JSON.stringify({
+  localStorage.setItem('ins_contact', JSON.stringify({
     nombre: form.value.nombre.trim(),
     email: form.value.email.trim().toLowerCase(),
     phone: parsedPhoneE164.value,
     timestamp: Date.now(),
   }))
   ;(window as any).fbq?.('track', 'CompleteRegistration')
-  emit('close')
-  router.push('/ver-video')
+  emit('registered')
 }
 
 // ── Keyboard trap ─────────────────────────────────────────────────────────────
@@ -226,9 +223,9 @@ watch(dropdownOpen, open => {
 
           <!-- ── FORMULARIO ─────────────────────────────────── -->
           <!-- ── FORMULARIO ─────────────────────────────────── -->
-            <p class="rmodal__eyebrow">Acceso gratuito</p>
-            <h2 id="rmodal-title" class="rmodal__title">Ver el video<br><span class="rmodal__title-accent">gratis</span></h2>
-            <p class="rmodal__subtitle">Cupos limitados — completa tus datos y accede al video ahora.</p>
+            <p class="rmodal__eyebrow">Agenda tu cita</p>
+            <h2 id="rmodal-title" class="rmodal__title">Transforma tu sonrisa<br><span class="rmodal__title-accent">hoy</span></h2>
+            <p class="rmodal__subtitle">Completa tus datos para ver los horarios disponibles.</p>
 
             <form class="rmodal__form" @submit.prevent="handleSubmit" novalidate>
 
@@ -366,7 +363,7 @@ watch(dropdownOpen, open => {
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 </template>
-                {{ submitting ? 'Enviando...' : 'VER EL VIDEO AHORA' }}
+                {{ submitting ? 'Enviando...' : 'CONTINUAR CON MI CITA' }}
               </button>
 
               <p class="rmodal__legal">

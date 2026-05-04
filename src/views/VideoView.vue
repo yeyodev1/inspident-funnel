@@ -45,7 +45,7 @@ const submitCapture = async () => {
   trackStage('lead_capturado', {
     nombre: c.nombre,
     apellido: c.apellido,
-    negocio: c.negocio,
+    negocio: c.negocio ?? '',
     email: c.email,
     telefono: c.telefono,
     event_id: leadEventId,

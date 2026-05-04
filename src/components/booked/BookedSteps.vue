@@ -1,48 +1,21 @@
 <script setup lang="ts">
-/**
- * BookedSteps.vue
- * Displays the list of next steps with premium glassmorphism card styling.
- */
-
-interface StepItem {
-  icon: string;
-  title: string;
-  body: string;
-}
-
-const props = defineProps({
-  steps: {
-    type: Array as () => StepItem[],
-    required: true,
-  },
-});
+defineProps<{
+  steps: { icon: string; title: string; desc: string }[]
+}>()
 </script>
 
 <template>
   <section class="booked-steps">
-    <h2 class="booked-steps__section-title">
-      <i class="fa-solid fa-list-check"></i>
-      Próximos pasos
-    </h2>
-
-    <ol class="steps-list">
-      <li
-        v-for="(step, idx) in props.steps"
-        :key="idx"
-        class="steps-item"
-      >
-        <!-- Contador de pasos -->
-        <div class="steps-item__num">{{ idx + 1 }}</div>
-        
-        <!-- Icono representativo -->
-        <div class="steps-item__icon-wrap">
-          <i :class="`fa-${idx === 1 ? 'brands' : 'solid'} fa-${step.icon}`"></i>
+    <p class="booked-steps__label">Próximos pasos</p>
+    <h2 class="booked-steps__title">Prepárate para tu visita</h2>
+    <ol class="booked-steps__list" role="list">
+      <li v-for="(step, i) in steps" :key="i" class="booked-steps__item">
+        <div class="booked-steps__icon">
+          <i :class="'fa-solid ' + step.icon" aria-hidden="true"></i>
         </div>
-
-        <!-- Contenido textual -->
-        <div class="steps-item__content">
-          <strong class="steps-item__title">{{ step.title }}</strong>
-          <p class="steps-item__body">{{ step.body }}</p>
+        <div class="booked-steps__content">
+          <strong class="booked-steps__item-title">{{ step.title }}</strong>
+          <p class="booked-steps__item-desc">{{ step.desc }}</p>
         </div>
       </li>
     </ol>
@@ -50,149 +23,78 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as colors;
 @use '@/styles/fonts.modules.scss' as fonts;
+@use '@/styles/colorVariables.module.scss' as colors;
 
 .booked-steps {
-  width: 100%;
-  padding: 1.5rem 0;
+  background: #F8FAFF;
+  border: 1px solid #DBEAFE;
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem;
 
-  @media (min-width: 768px) {
-    padding: 2.5rem 0;
-  }
-
-  &__section-title {
-    @include fonts.heading-font(700);
-    font-size: 1.1rem;
-    color: colors.$white;
-    margin: 0 0 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-
-    i { color: colors.$BAKANO-PINK; }
-
-    @media (min-width: 768px) {
-      font-size: 1.25rem;
-      margin-bottom: 2rem;
-    }
-  }
-}
-
-.steps-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  @media (min-width: 768px) {
-    gap: 1.25rem;
-  }
-}
-
-.steps-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: rgba(colors.$BAKANO-PURPLE, 0.04);
-  border: 1px solid rgba(colors.$BAKANO-PURPLE, 0.15);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-
-  &:hover {
-    background: rgba(colors.$BAKANO-PURPLE, 0.08);
-    border-color: rgba(colors.$BAKANO-PINK, 0.4);
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-
-    .steps-item__icon-wrap {
-      background: rgba(colors.$BAKANO-PINK, 0.2);
-      transform: scale(1.1);
-    }
-  }
-
-  @media (min-width: 768px) {
-    gap: 1.5rem;
-    padding: 1.75rem;
-  }
-
-  &__num {
-    flex-shrink: 0;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: colors.$BAKANO-PINK;
-    color: colors.$white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    @include fonts.accent-font(700);
-    font-size: 0.75rem;
-
-    @media (min-width: 768px) {
-      width: 32px;
-      height: 32px;
-      font-size: 0.9rem;
-    }
-  }
-
-  &__icon-wrap {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    background: rgba(colors.$BAKANO-PINK, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(colors.$BAKANO-PINK, 0.2);
-    transition: all 0.3s ease;
-
-    i {
-      font-size: 1rem;
-      color: colors.$BAKANO-PINK;
-      filter: drop-shadow(0 0 8px rgba(colors.$BAKANO-PINK, 0.4));
-    }
-
-    @media (min-width: 768px) {
-      width: 48px;
-      height: 48px;
-      i { font-size: 1.3rem; }
-    }
-  }
-
-  &__content {
-    flex: 1;
-    min-width: 0;
+  &__label {
+    font-family: fonts.$font-interface;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: colors.$INS-BLUE;
+    margin: 0 0 0.35rem;
   }
 
   &__title {
-    display: block;
-    @include fonts.interface-font(700);
-    font-size: 0.95rem;
-    color: colors.$white;
-    margin-bottom: 0.35rem;
-
-    @media (min-width: 768px) {
-      font-size: 1.1rem;
-    }
+    @include fonts.heading-font(700);
+    font-size: 1.05rem;
+    color: colors.$INS-DARK;
+    margin: 0 0 1.25rem;
   }
 
-  &__body {
-    @include fonts.body-font(400);
-    font-size: 0.9rem;
-    color: rgba(colors.$white, 0.65);
+  &__list {
+    list-style: none;
+    padding: 0;
     margin: 0;
-    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    @media (min-width: 768px) {
-      font-size: 1rem;
-    }
+  &__item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: colors.$INS-BLUE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    i { color: #ffffff; font-size: 1rem; }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-top: 0.1rem;
+  }
+
+  &__item-title {
+    font-size: 0.9rem;
+    color: colors.$INS-DARK;
+    font-weight: 700;
+    display: block;
+  }
+
+  &__item-desc {
+    font-size: 0.83rem;
+    color: #4A5F7A;
+    line-height: 1.5;
+    margin: 0;
   }
 }
 </style>

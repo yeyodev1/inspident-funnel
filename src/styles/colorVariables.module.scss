@@ -1,34 +1,59 @@
-// Luisa Pita Bejarano — Programa de Transformación
-// Paleta: Verde / Negro / Blanco
+// Inspident — Dental Aesthetic Clinic
+// Paleta: Azul profesional / Blanco / Navy
 
-$LPB-GREEN:   #16C784;   // Verde vibrante — CTAs y acentos principales
-$LPB-GREEN-D: #0A9E68;   // Verde oscuro — hover states
-$LPB-BLACK:   #0D1117;   // Negro profundo — fondos oscuros y texto
-$LPB-DARK:    #0D1117;   // Alias texto oscuro
-$LPB-LIGHT:   #F0FFF8;   // Fondo muy claro (tinte verde suave)
-$LPB-SURFACE: #F5FFFA;   // Cards/superficies claras
+$INS-BLUE:    #1E40AF;   // Azul dental principal — CTAs y acentos
+$INS-BLUE-L:  #3B82F6;   // Azul claro — hover, highlights
+$INS-DARK:    #0F172A;   // Navy oscuro — texto principal
+$INS-LIGHT:   #EFF6FF;   // Fondo claro (azul suavísimo)
+$INS-SURFACE: #F8FAFF;   // Cards / superficies
 
 // Aliases semánticos
-$LPB-PRIMARY:   $LPB-GREEN;
-$LPB-SECONDARY: $LPB-GREEN-D;
-$LPB-ACCENT:    $LPB-GREEN;
+$INS-PRIMARY:   $INS-BLUE;
+$INS-SECONDARY: $INS-BLUE-L;
+$INS-ACCENT:    $INS-BLUE-L;
 
-// Legacy (backward-compat — todos apuntan a verde/negro)
-$LPB-PINK:    $LPB-GREEN;
-$LPB-PURPLE:  $LPB-GREEN-D;
-$LPB-CORAL:   $LPB-GREEN;
+// Legacy OS-* aliases — backward compat
+$OS-RED:     $INS-BLUE;
+$OS-NAVY:    $INS-DARK;
+$OS-BLUE:    $INS-BLUE-L;
+$OS-DARK:    $INS-DARK;
+$OS-LIGHT:   $INS-LIGHT;
+$OS-SURFACE: $INS-SURFACE;
 
-$BAKANO-PRIMARY: $LPB-GREEN;
-$BAKANO-PINK:    $LPB-GREEN;
-$BAKANO-DARK:    $LPB-BLACK;
-$BAKANO-LIGHT:   $LPB-LIGHT;
-$BAKANO-PURPLE:  $LPB-GREEN-D;
-$BAKANO-GREEN:   $LPB-GREEN;
+// Legacy LPB-* aliases — backward compat
+$LPB-GREEN:     $INS-BLUE;
+$LPB-GREEN-D:   $INS-BLUE-L;
+$LPB-BLACK:     $INS-DARK;
+$LPB-DARK:      $INS-DARK;
+$LPB-LIGHT:     $INS-LIGHT;
+$LPB-SURFACE:   $INS-SURFACE;
+$LPB-PRIMARY:   $INS-BLUE;
+$LPB-SECONDARY: $INS-BLUE-L;
+$LPB-ACCENT:    $INS-BLUE;
+$LPB-PINK:      $INS-BLUE;
+$LPB-PURPLE:    $INS-BLUE-L;
+$LPB-CORAL:     $INS-BLUE;
+
+// Legacy BAKANO-* aliases
+$BAKANO-PRIMARY: $INS-BLUE;
+$BAKANO-PINK:    $INS-BLUE;
+$BAKANO-DARK:    $INS-DARK;
+$BAKANO-LIGHT:   $INS-LIGHT;
+$BAKANO-PURPLE:  $INS-BLUE-L;
+$BAKANO-GREEN:   $INS-BLUE;
+
+// Legacy AB-* aliases
+$AB-WOOD:  $INS-BLUE;
+$AB-EARTH: $INS-BLUE-L;
+$AB-FOREST: $INS-DARK;
+$AB-SAGE:  $INS-BLUE;
+$AB-CREAM: $INS-LIGHT;
+$AB-WHITE: #ffffff;
 
 // Colores base
 $white: #ffffff;
 $text-light: #f5f5f5;
-$overlay-primary: rgba($LPB-GREEN, 0.1);
+$overlay-primary: rgba($INS-BLUE, 0.1);
 
 // Grises UI
 $gray-100: #f8f9fa;
@@ -40,19 +65,3 @@ $gray-600: #6c757d;
 $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
-
-// AB aliases
-$AB-WOOD:    $LPB-GREEN;
-$AB-EARTH:   $LPB-GREEN-D;
-$AB-FOREST:  $LPB-BLACK;
-$AB-SAGE:    $LPB-GREEN;
-$AB-CREAM:   $LPB-LIGHT;
-$AB-WHITE:   #ffffff;
-
-// OS aliases
-$OS-RED:     $LPB-GREEN;
-$OS-NAVY:    $LPB-BLACK;
-$OS-BLUE:    $LPB-GREEN-D;
-$OS-DARK:    $LPB-BLACK;
-$OS-LIGHT:   $LPB-LIGHT;
-$OS-SURFACE: $LPB-SURFACE;

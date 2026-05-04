@@ -1,109 +1,91 @@
-# Ocean Safety — VSL Funnel Landing
+# Inspident — Funnel de Estética Dental
 
 ## Proyecto
-Este repositorio es la landing page / funnel de **Ocean Safety** (oceansafety.ec).
-Representantes oficiales Honda Marine en Ecuador — motores fuera de borda para flotas camaroneras, transporte y seguridad.
-Es un **funnel de una sola página** (VSL Funnel) orientado a captación de consultas técnicas.
+Este repositorio es la landing page / funnel de **Inspident** — consultorio de estética dental.
+Es un **funnel de una sola página** (sin video) orientado a captación de leads calificados con presupuesto de $200+.
 
 ## Stack
-- **Vue 3** + Vite 7 + TypeScript
+- **Vue 3** + Vite + TypeScript
 - **SCSS** con variables en `src/styles/colorVariables.module.scss`
-- **GSAP** instalado (sin uso activo — loader global eliminado)
+- **GSAP** instalado (BookedHero usa animaciones de entrada)
 - **pnpm** como package manager
 - **vue-router** (rutas del funnel + legales)
 - **FontAwesome 6** (CDN en index.html) — usar `<i class="fa-solid fa-...">`, NO emojis
 
-## Flujo del Funnel (multi-paso)
+## Flujo del Funnel
 ```
 / (FunnelView)
-  ↓ [form submit → router.push('/ver-video')]
-/ver-video (VideoView)            ← VSL Wistia; CTA bloqueado 2 min; guard de contacto
-  ↓ [popup CalendarModal → cualifica]
-/agendar (BookingView)            ← GHL calendar iframe (pre-llenado con datos del contacto)
+  ↓ [CTA → RegistrationModal captura contacto]
+  ↓ [CalendarModal califica: $200 disponible + ready this week]
+/agendar (BookingView)    ← GHL calendar + banner $10 depósito
   ↓ [msgsndr-booking-complete]
-/cita-confirmada (BookedView)     ← Confirmación final con nombre personalizado
-  ↓ [no cualifica en CalendarModal]
-/sin-espacio (NoSpaceView)        ← Rechazo empático + teaser del curso
+/cita-confirmada (BookedView)
+  ↓ [no califica en CalendarModal]
+/sin-espacio (NoSpaceView)
 ```
 
+## Servicios que ofrece Inspident
+1. **Blanqueamiento Dental** (servicio principal — headline del funnel)
+2. **Fillers Labiales** (servicio secundario)
+3. **Especial DiaMadres** (promo mayo — combo blanqueamiento + tratamiento)
+
+## Calificación
+- Presupuesto mínimo: **$200 disponibles**
+- Depósito de reserva: **$10 con tarjeta** al confirmar cita (se descuenta del tratamiento)
+- CalendarModal descalifica si: presupuesto < $200 OR solo explorando
+
 ## LocalStorage — claves en uso
-| Clave | Contenido | Quién lo escribe |
+| Clave | Contenido | Quién la escribe |
 |---|---|---|
-| `os_contact` | `{ nombre, email, phone, timestamp }` | RegistrationModal + VideoView guard |
-| `os_disq_at` | timestamp (ms) | CalendarModal al disqualificar |
-| `os_booked_at` | timestamp (ms) | BookingView al confirmar cita |
+| `ins_contact` | `{ nombre, apellido, email, telefono, timestamp }` | RegistrationModal |
+| `ins_disq_at` | timestamp (ms) | CalendarModal al descalificar |
+| `ins_booked_at` | timestamp (ms) | BookingView al confirmar cita |
 
 ## Guards de seguridad
-- **FunnelView**: si `os_disq_at` < 24h → redirige a `/sin-espacio` (desactivado en `localhost`)
-- **VideoView**: si no hay `os_contact` → overlay bloqueante para capturar contacto (desactivado en `localhost`)
-- **CalendarModal**: `sector = otro` OR `embarcaciones = 1-2` → `/sin-espacio` + guarda `os_disq_at`
+- **FunnelView**: si `ins_disq_at` < 24h → redirige a `/sin-espacio` (desactivado en `localhost`)
+- **CalendarModal**: presupuesto=b OR disponibilidad=b → `/sin-espacio` + guarda `ins_disq_at`
 
 ## GHL Calendar
-- URL: `https://api.leadconnectorhq.com/widget/booking/dtpY2GCQjoOkpm8JUtYz` ← **TODO: actualizar para Ocean Safety**
-- Pre-fill params: `?firstName=...&email=...&phone=...` (leídos de `os_contact`)
+- URL: `https://api.leadconnectorhq.com/widget/booking/Dqe1lrB2Ieejmm25uJSP`
+- Pre-fill params: `?firstName=...&email=...&phone=...` (leídos de `ins_contact`)
 - Evento de confirmación: `postMessage(['msgsndr-booking-complete', {...}])`
-- Altura dinámica: `postMessage({ type: 'booking-app', height: N })`
 
 ## Estructura clave
 ```
 src/
   views/
-    FunnelView.vue          ← / — PÁGINA PRINCIPAL (funnel VSL + RegistrationModal)
-    VideoView.vue           ← /ver-video — VSL Wistia + timer 2 min + contact guard
-    BookingView.vue         ← /agendar — GHL calendar iframe pre-llenado
-    BookedView.vue          ← /cita-confirmada — orquestador de subcomponentes
-    NoSpaceView.vue         ← /sin-espacio — rechazo + teaser curso + cooldown 24h
+    FunnelView.vue          ← / — Landing principal (sin video)
+    BookingView.vue         ← /agendar — GHL calendar + banner $10
+    BookedView.vue          ← /cita-confirmada
+    NoSpaceView.vue         ← /sin-espacio
     PrivacyPolicyView.vue   ← /politicas-privacidad
     LegalNoticeView.vue     ← /aviso-legal
+    VideoView.vue           ← (legacy — redirige a /)
   components/
-    RegistrationModal.vue   ← Modal de captura (nombre, apellido, email, teléfono, empresa)
-    CalendarModal.vue       ← Modal de calificación 3 preguntas → routing
-    booked/                 ← Subcomponentes de BookedView
+    RegistrationModal.vue   ← Modal captura (nombre, apellido, email, teléfono)
+    CalendarModal.vue       ← Modal calificación (2 preguntas → routing)
+    booked/
       BookedHeader.vue
-      BookedHero.vue        ← Recibe prop :contact-name
-      BookedSteps.vue       ← Recibe prop :steps
-      BookedTeam.vue        ← Recibe prop :team
+      BookedHero.vue        ← Prop :contact-name
+      BookedSteps.vue       ← Prop :steps
+      BookedTeam.vue        ← Prop :team
       BookedFooter.vue
-  components/globals/
-    TheGlobalLoader.vue     ← Loader eliminado (no se usa — no importar)
-  assets/
-    logos/                  ← Logo-large.png, logo-small.png (Ocean Safety)
-    team/                   ← (pendiente: foto Roberto Allú)
-    testimonios/            ← (pendiente: testimonios Ocean Safety)
+  stores/
+    contact.ts              ← Pinia store, key: ins_contact
+  utils/
+    ghl.ts                  ← trackStage webhook (actualizar URL para Inspident)
+    fbclid.ts               ← FB click ID utils
+  styles/
+    colorVariables.module.scss  ← Paleta Inspident (INS-BLUE, etc.)
 ```
 
-## Padding mobile — patrón de BookedView
-`BookedView` centraliza el padding en `booked-view__container` (`padding: 0 1.5rem` mobile, `0 2rem` desktop).
-Los subcomponentes (`BookedHero`, `BookedSteps`, `BookedTeam`) usan `padding: 0` horizontal — heredan del contenedor.
-
-## Videos
-- **Wistia media-id `u9yljeo589`** → **TODO: reemplazar con el video ID de Ocean Safety**
-- Script Wistia no se agrega al HTML global; se usa iframe responsive 16:9
-
-## Funnel — Contenido Ocean Safety
-- **Headline**: "Profesionaliza tu flota y elimina las paradas no programadas con ingeniería náutica japonesa"
-- **Especialista**: Roberto Allú — Especialista en Soluciones Náuticas Industriales
-- **Marca**: Honda Marine (representantes oficiales Ecuador)
-- **Segmentos**: flotas camaroneras, transporte fluvial/marítimo, seguridad naval
-- **Motores clave**: BF2.3 (enfriado por aire), BF150 VTEC BLAST, 250HP, 350HP
-- **CTA principal**: "AGENDAR CONSULTA TÉCNICA GRATIS" → abre `RegistrationModal`
-- **Entidad legal**: OCEAN SAFETY (pendiente nombre legal exacto)
-
-## Imágenes CDN
-Las imágenes del funnel se suben a Cloudinary:
-- Cloud: `dpuody0df`
-- Las URLs se almacenan en `/tmp/cloudinary-urls.json` después de ejecutar el script de upload
-
-## Colores de marca (Ocean Safety — light theme)
+## Colores de marca (Inspident — light theme)
 ```scss
-// Variables en colorVariables.module.scss
-// Alias BAKANO mantiene compatibilidad; aliases OS recomendados para código nuevo
-$OS-RED:     #CC0000   // Honda red — CTAs
-$OS-NAVY:    #003F7D   // Ocean navy — brand principal
-$OS-BLUE:    #0066CC   // Ocean blue — secundario
-$OS-DARK:    #0D1B2A   // Texto oscuro
-$OS-LIGHT:   #F0F6FF   // Fondo claro
-$OS-SURFACE: #F5F8FF   // Superficies/cards
+$INS-BLUE:    #1E40AF   // Azul principal — CTAs y acentos
+$INS-BLUE-L:  #3B82F6   // Azul claro — hover, highlights
+$INS-DARK:    #0F172A   // Navy oscuro — texto
+$INS-LIGHT:   #EFF6FF   // Fondo claro
+$INS-SURFACE: #F8FAFF   // Cards / superficies
 ```
 
 ## Fuentes
@@ -119,8 +101,18 @@ pnpm build      # build de producción
 pnpm type-check # TypeScript check
 ```
 
+## Pendientes del cliente
+- [ ] **Meta Pixel ID** de Inspident (reemplazar `INSPIDENT_PIXEL_ID` en index.html)
+- [ ] **GHL Webhook URL** para Inspident (actualizar `GHL_WEBHOOK` en `src/utils/ghl.ts`)
+- [ ] **VITE_WEBHOOK_REGISTRO** en `.env` — webhook de registro GHL
+- [ ] Logo Inspident en `src/assets/logos/` (reemplazar Logo-large.png y logo-small.png)
+- [ ] Fotos del consultorio/equipo en `src/assets/team/`
+- [ ] Testimonios reales de pacientes en `src/assets/testimonios/`
+- [ ] Dominio final (reemplazar `inspident.com` en index.html y router)
+- [ ] Precios reales de blanqueamiento y fillers (actualizar en FunnelView.vue)
+
 ## No hacer
-- No agregar Header/Footer de navegación al funnel (la app ya no los monta)
-- No usar emojis en ningún lugar — usar íconos FontAwesome (`<i class="fa-solid fa-...">`)
-- No usar el HomeView.vue (obsoleto, reemplazado por FunnelView.vue)
-- No usar ThankYouView.vue (obsoleto, reemplazado por VideoView + BookingView + BookedView)
+- No agregar Header/Footer de navegación al funnel
+- No usar emojis — usar íconos FontAwesome (`<i class="fa-solid fa-...">`)
+- No usar VideoView.vue para contenido (redirige a /)
+- No usar variables LPB-* / OS-* en código nuevo — usar INS-*

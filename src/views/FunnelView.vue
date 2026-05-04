@@ -1,112 +1,135 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import RegistrationModal from '@/components/RegistrationModal.vue'
-import { captureFbParams } from '@/utils/fbclid'
-const CDN = 'https://res.cloudinary.com/dkosgkjpq/image/upload'
-const LUISA_AUTHORITY = `${CDN}/w_560,h_700,c_fill,g_face,q_auto,f_auto/luisa-pita/luisa-11.jpg`
-const LUISA_VSL = `${CDN}/w_1280,h_720,c_fill,g_face,q_auto,f_auto/luisa-pita/luisa-2.jpg`
+import CalendarModal from '@/components/CalendarModal.vue'
 
-const router = useRouter()
-const modalOpen = ref(false)
-const IS_DEV = window.location.hostname === 'localhost'
+const registrationOpen = ref(false)
+const calendarOpen = ref(false)
 
-const openModal = () => {
-  if (!IS_DEV) {
-    const disqAt = localStorage.getItem('lpb_disq_at')
-    if (disqAt && Date.now() - Number(disqAt) < 24 * 60 * 60 * 1000) {
-      router.push('/sin-espacio')
-      return
-    }
+function openModal() {
+  const stored = localStorage.getItem('ins_contact')
+  if (stored) {
+    calendarOpen.value = true
+  } else {
+    registrationOpen.value = true
   }
-  modalOpen.value = true
 }
 
-const stats = [
+function onRegistered() {
+  registrationOpen.value = false
+  calendarOpen.value = true
+}
+
+const services = [
   {
-    icon: 'fa-solid fa-users',
-    number: '200+',
-    text: 'Mujeres transformadas con el programa',
+    badge: 'MAS POPULAR',
+    badgeIcon: 'fa-star',
+    icon: 'fa-tooth',
+    name: 'Blanqueamiento Dental',
+    desc: 'Hasta 8 tonos más blanco en una sola sesión. Tecnología LED de última generación — sin dolor, sin sensibilidad, con resultados inmediatos que duran años.',
+    features: [
+      'Resultado visible desde la 1ra sesión',
+      'Tecnología LED de vanguardia',
+      'Sin dolor · Sin sensibilidad',
+      'Efecto dura hasta 2 años',
+    ],
+    cta: 'Quiero mi cita',
+    highlight: true,
   },
   {
-    icon: 'fa-solid fa-calendar-check',
-    number: '8',
-    text: 'Semanas para resultados reales y duraderos',
+    badge: null,
+    badgeIcon: null,
+    icon: 'fa-spa',
+    name: 'Fillers Labiales',
+    desc: 'Labios más voluminosos y definidos de forma 100% natural. Ácido hialurónico premium, sin cirugía, con resultados inmediatos que lucen naturales.',
+    features: [
+      'Resultado natural y armonioso',
+      'Ácido hialurónico premium',
+      'Sin cirugía ni recuperación',
+      'Efecto dura 6-12 meses',
+    ],
+    cta: 'Quiero mi cita',
+    highlight: false,
   },
   {
-    icon: 'fa-solid fa-heart-pulse',
-    number: '97%',
-    text: 'Tasa de éxito sin efecto rebote',
+    badge: 'PROMO MAYO',
+    badgeIcon: 'fa-gift',
+    icon: 'fa-heart',
+    name: 'Especial DiaMadres',
+    desc: 'El regalo más especial del año: combo blanqueamiento + tratamiento estético. Celebra a mamá con una transformación real y duradera.',
+    features: [
+      'Blanqueamiento dental profesional',
+      'Tratamiento estético incluido',
+      'Kit de mantenimiento de regalo',
+      'Solo disponible durante mayo',
+    ],
+    cta: 'Aprovechar promo',
+    highlight: false,
   },
 ]
 
-const pillars = [
-  'Sin dietas restrictivas que te hacen sufrir y abandonar',
-  'Sin rutinas de 2 horas imposibles para tu agenda',
-  'Sin el efecto rebote de siempre',
-  'Con un plan personalizado que funciona para mujeres ocupadas',
-]
-
-const methodology = [
+const steps = [
   {
     num: '01',
-    icon: 'fa-solid fa-clipboard-list',
-    title: 'Evaluación Personalizada',
-    body: 'Analizamos tu historial, metabolismo y rutina diaria para crear un plan 100% adaptado a ti y tu estilo de vida.',
+    icon: 'fa-calendar-check',
+    title: 'Agenda tu cita online',
+    desc: 'Elige el día y hora que mejor te convenga. El proceso toma menos de 2 minutos.',
   },
   {
     num: '02',
-    icon: 'fa-solid fa-bowl-food',
-    title: 'Plan Nutricional Flexible',
-    body: 'Nada de prohibiciones. Aprendes a comer de forma inteligente, sin pasar hambre, encajando en tu vida real.',
+    icon: 'fa-user-doctor',
+    title: 'Consulta con nuestros especialistas',
+    desc: 'Te evaluamos y diseñamos el plan de tratamiento ideal para tu caso.',
   },
   {
     num: '03',
-    icon: 'fa-solid fa-fire-flame-curved',
-    title: 'Movimiento Eficiente',
-    body: 'Rutinas de 20-30 minutos diseñadas para mujeres ocupadas. Máximos resultados con el mínimo tiempo disponible.',
+    icon: 'fa-face-smile',
+    title: 'Luce tu nueva sonrisa',
+    desc: 'Resultados visibles desde la primera sesión. Sal diferente de como entraste.',
   },
 ]
 
-// Countdown urgency (24h rolling)
-const hours = ref('23')
-const minutes = ref('47')
-const seconds = ref('12')
-let interval: ReturnType<typeof setInterval>
+const stats = [
+  { icon: 'fa-users', number: '+500', text: 'Pacientes satisfechos' },
+  { icon: 'fa-star', number: '4.9/5', text: 'Calificación promedio' },
+  { icon: 'fa-shield-halved', number: '+5 años', text: 'De experiencia clínica' },
+  { icon: 'fa-award', number: '100%', text: 'Especialistas certificados' },
+]
 
-onMounted(() => {
-  captureFbParams()
-  let total = 23 * 3600 + 47 * 60 + 12
-  interval = setInterval(() => {
-    total--
-    if (total <= 0) total = 23 * 3600 + 59 * 60 + 59
-    hours.value = String(Math.floor(total / 3600)).padStart(2, '0')
-    minutes.value = String(Math.floor((total % 3600) / 60)).padStart(2, '0')
-    seconds.value = String(total % 60).padStart(2, '0')
-  }, 1000)
-})
-
-onUnmounted(() => clearInterval(interval))
+const testimonials = [
+  {
+    name: 'María José R.',
+    result: 'Blanqueamiento Dental',
+    text: 'No podía creer el cambio. En una sesión mis dientes quedaron increíbles. El equipo es súper profesional y no sentí dolor para nada.',
+    stars: 5,
+  },
+  {
+    name: 'Andreína L.',
+    result: 'Fillers Labiales',
+    text: 'Llevaba tiempo queriendo hacerme los labios pero tenía miedo. Me explicaron todo, el resultado es natural y me encanta. Regreso seguro.',
+    stars: 5,
+  },
+  {
+    name: 'Sofía M.',
+    result: 'Especial DiaMadres',
+    text: 'Le regalé el combo DiaMadres a mi mamá y quedó feliz. El blanqueamiento + tratamiento fue una experiencia increíble para ella.',
+    stars: 5,
+  },
+]
 </script>
 
 <template>
   <div class="funnel">
 
-    <!-- TOP BAR -->
-    <header class="funnel__topbar">
-      <h2 class="funnel__logo-text">LUISA PITA BEJARANO</h2>
-    </header>
-
-    <!-- URGENCY BANNER -->
-    <div class="funnel__urgency" role="banner">
-      <span class="funnel__urgency-dot" aria-hidden="true" />
-      <span>Cupos limitados — expiran en:</span>
-      <div class="funnel__timer" aria-live="polite" aria-label="Tiempo restante">
-        <span class="funnel__timer-block"><strong>{{ hours }}</strong><small>h</small></span>
-        <span class="funnel__timer-sep" aria-hidden="true">:</span>
-        <span class="funnel__timer-block"><strong>{{ minutes }}</strong><small>m</small></span>
-        <span class="funnel__timer-sep" aria-hidden="true">:</span>
-        <span class="funnel__timer-block"><strong>{{ seconds }}</strong><small>s</small></span>
+    <!-- TOPBAR -->
+    <div class="funnel__topbar" role="banner">
+      <div class="funnel__container">
+        <p class="funnel__topbar-text">
+          <i class="fa-solid fa-gift" aria-hidden="true"></i>
+          <strong>Especial DiaMadres</strong> — Promo activa solo durante mayo
+          <span class="funnel__topbar-sep">·</span>
+          Cupos limitados
+        </p>
       </div>
     </div>
 
@@ -114,71 +137,117 @@ onUnmounted(() => clearInterval(interval))
     <section class="funnel__hero" aria-labelledby="funnel-headline">
       <div class="funnel__container">
 
-
-        <p class="funnel__eyebrow">
-          <i class="fa-solid fa-heart-pulse" aria-hidden="true"></i>
-          Programa de Transformación para Mujeres Ocupadas
-        </p>
+        <span class="funnel__eyebrow">
+          <i class="fa-solid fa-tooth" aria-hidden="true"></i>
+          Clínica de Estética Dental
+        </span>
 
         <h1 id="funnel-headline" class="funnel__headline">
-          Baja 8 kilos en 8 semanas
-          <span class="funnel__headline-accent">sin efecto rebote</span>
-          — aunque ya lo hayas intentado antes
+          Tu sonrisa perfecta
+          <span class="funnel__headline-accent">está a una cita de distancia</span>
         </h1>
 
+        <p class="funnel__hero-sub">
+          Blanqueamiento profesional, fillers naturales y tratamientos estéticos de última generación.
+          Resultados visibles desde la primera sesión — sin dolor, sin tiempo de recuperación.
+        </p>
+
         <ul class="funnel__pillars" role="list">
-          <li v-for="p in pillars" :key="p" class="funnel__pillar">
+          <li class="funnel__pillar">
             <i class="fa-solid fa-check" aria-hidden="true"></i>
-            {{ p }}
+            Hasta 8 tonos más blanco en 1 sesión
+          </li>
+          <li class="funnel__pillar">
+            <i class="fa-solid fa-check" aria-hidden="true"></i>
+            Fillers labiales 100% naturales
+          </li>
+          <li class="funnel__pillar">
+            <i class="fa-solid fa-check" aria-hidden="true"></i>
+            Sin dolor · Sin tiempo de recuperación
           </li>
         </ul>
 
-        <!-- VSL Gated Area -->
-        <div class="funnel__vsl-wrap">
-          <div class="funnel__vsl" @click="openModal()" role="button" aria-label="Ver video" tabindex="0">
-            <div class="funnel__vsl-bg">
-              <img :src="LUISA_VSL" class="funnel__vsl-thumb" alt="Luisa Pita Bejarano — Ver el video" />
-              <div class="funnel__vsl-vignette"></div>
-            </div>
-            <div class="funnel__vsl-overlay">
-              <div class="funnel__vsl-play-wrap">
-                <div class="funnel__vsl-play">
-                  <i class="fa-solid fa-play" aria-hidden="true"></i>
-                </div>
-                <span class="funnel__vsl-play-label">Ver el video gratis</span>
-              </div>
-              <p class="funnel__vsl-caption">Descubre el método exacto que usaron más de 200 mujeres para bajar 8 kilos en 8 semanas — sin efecto rebote</p>
-            </div>
-            <div class="funnel__vsl-duration" aria-hidden="true">
-              <i class="fa-solid fa-circle-play"></i>
-              Video de 8 min
-            </div>
-          </div>
-        </div>
-
-        <!-- CTA -->
         <div class="funnel__cta-wrap">
           <button class="funnel__cta-btn" @click="openModal()">
-            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            QUIERO MI PLAN PERSONALIZADO
+            <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+            QUIERO MI CITA AHORA
           </button>
           <p class="funnel__cta-sub">
-            <i class="fa-solid fa-lock" aria-hidden="true"></i>
-            Cupos limitados &nbsp;·&nbsp; Sin compromiso &nbsp;·&nbsp; Acceso inmediato
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+            Disponibilidad limitada &nbsp;·&nbsp; Solo para pacientes con $200+ disponibles
           </p>
         </div>
 
       </div>
     </section>
 
-    <!-- STATS -->
-    <section class="funnel__stats" aria-label="Resultados comprobados">
+    <!-- SERVICIOS -->
+    <section class="funnel__services" aria-labelledby="services-heading">
       <div class="funnel__container">
-        <p class="funnel__section-label funnel__section-label--light">Resultados reales — mujeres reales</p>
+        <p class="funnel__section-label">Nuestros tratamientos</p>
+        <h2 id="services-heading" class="funnel__section-title">
+          Todo lo que tu imagen merece,
+          <span class="funnel__section-title-accent">en un solo lugar</span>
+        </h2>
+        <div class="funnel__services-grid">
+          <div
+            v-for="svc in services"
+            :key="svc.name"
+            class="funnel__service-card"
+            :class="{ 'funnel__service-card--highlight': svc.highlight }"
+          >
+            <div v-if="svc.badge" class="funnel__service-badge">
+              <i :class="'fa-solid ' + svc.badgeIcon" aria-hidden="true"></i>
+              {{ svc.badge }}
+            </div>
+            <div class="funnel__service-icon">
+              <i :class="'fa-solid ' + svc.icon" aria-hidden="true"></i>
+            </div>
+            <h3 class="funnel__service-name">{{ svc.name }}</h3>
+            <p class="funnel__service-desc">{{ svc.desc }}</p>
+            <ul class="funnel__service-features" role="list">
+              <li v-for="f in svc.features" :key="f">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                {{ f }}
+              </li>
+            </ul>
+            <button class="funnel__service-cta" @click="openModal()">
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              {{ svc.cta }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="funnel__steps" aria-labelledby="steps-heading">
+      <div class="funnel__container">
+        <p class="funnel__section-label funnel__section-label--light">Simple y rápido</p>
+        <h2 id="steps-heading" class="funnel__section-title funnel__section-title--light">
+          Así de fácil es
+          <span class="funnel__section-title-accent--light">transformar tu imagen</span>
+        </h2>
+        <div class="funnel__steps-grid">
+          <div v-for="step in steps" :key="step.num" class="funnel__step">
+            <div class="funnel__step-num">{{ step.num }}</div>
+            <div class="funnel__step-icon">
+              <i :class="'fa-solid ' + step.icon" aria-hidden="true"></i>
+            </div>
+            <h3 class="funnel__step-title">{{ step.title }}</h3>
+            <p class="funnel__step-desc">{{ step.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="funnel__stats" aria-label="Números que hablan solos">
+      <div class="funnel__container">
         <div class="funnel__stats-grid">
           <div v-for="stat in stats" :key="stat.number" class="funnel__stat">
             <div class="funnel__stat-icon" aria-hidden="true">
-              <i :class="stat.icon"></i>
+              <i :class="'fa-solid ' + stat.icon"></i>
             </div>
             <strong class="funnel__stat-number">{{ stat.number }}</strong>
             <p class="funnel__stat-text">{{ stat.text }}</p>
@@ -187,104 +256,56 @@ onUnmounted(() => clearInterval(interval))
       </div>
     </section>
 
-    <!-- PROBLEMA -->
-    <section class="funnel__problem" aria-labelledby="problem-heading">
+    <!-- TESTIMONIALES -->
+    <section class="funnel__testimonials" aria-labelledby="testimonials-heading">
       <div class="funnel__container">
-        <p class="funnel__section-label">¿Te identificas con esto?</p>
-        <h2 id="problem-heading" class="funnel__section-title">
-          La trampa en la que caen la mayoría de mujeres
+        <p class="funnel__section-label">Resultados reales</p>
+        <h2 id="testimonials-heading" class="funnel__section-title">
+          Lo que dicen nuestras
+          <span class="funnel__section-title-accent">pacientes</span>
         </h2>
-        <div class="funnel__problem-grid">
-          <div class="funnel__problem-item">
-            <i class="fa-solid fa-triangle-exclamation funnel__problem-icon" aria-hidden="true"></i>
-            <div>
-              <strong>Dietas que duran 2 semanas</strong>
-              <p>Restricción extrema → hambre → ansiedad → abandono → culpa. El ciclo de siempre que nunca lleva a resultados duraderos.</p>
+        <div class="funnel__testimonials-grid">
+          <div v-for="t in testimonials" :key="t.name" class="funnel__testimonial">
+            <div class="funnel__testimonial-stars" aria-label="5 de 5 estrellas">
+              <i v-for="s in t.stars" :key="s" class="fa-solid fa-star" aria-hidden="true"></i>
             </div>
-          </div>
-          <div class="funnel__problem-item">
-            <i class="fa-solid fa-triangle-exclamation funnel__problem-icon" aria-hidden="true"></i>
-            <div>
-              <strong>Rutinas de gym imposibles</strong>
-              <p>Planes diseñados para personas con 2 horas libres al día. Si tienes trabajo, familia y responsabilidades, simplemente no encajan.</p>
-            </div>
-          </div>
-          <div class="funnel__problem-item">
-            <i class="fa-solid fa-triangle-exclamation funnel__problem-icon" aria-hidden="true"></i>
-            <div>
-              <strong>El efecto rebote inevitable</strong>
-              <p>Bajas kilos rápido y los recuperas todos en pocas semanas. No es falta de voluntad — es que el método estaba mal desde el principio.</p>
+            <p class="funnel__testimonial-text">"{{ t.text }}"</p>
+            <div class="funnel__testimonial-author">
+              <div class="funnel__testimonial-avatar">
+                <i class="fa-solid fa-user" aria-hidden="true"></i>
+              </div>
+              <div>
+                <strong class="funnel__testimonial-name">{{ t.name }}</strong>
+                <span class="funnel__testimonial-result">{{ t.result }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- METODOLOGÍA -->
-    <section class="funnel__method" aria-labelledby="method-heading">
-      <div class="funnel__container">
-        <p class="funnel__section-label">Cómo funciona el programa</p>
-        <h2 id="method-heading" class="funnel__section-title">
-          Tres pilares que garantizan resultados sin rebote
-        </h2>
-        <div class="funnel__method-grid">
-          <div v-for="m in methodology" :key="m.num" class="funnel__method-card">
-            <div class="funnel__method-num" aria-hidden="true">{{ m.num }}</div>
-            <div class="funnel__method-icon" aria-hidden="true">
-              <i :class="m.icon"></i>
-            </div>
-            <h3 class="funnel__method-title">{{ m.title }}</h3>
-            <p class="funnel__method-body">{{ m.body }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TESTIMONIAL -->
-    <section class="funnel__testimonial" aria-labelledby="testimonial-heading">
-      <div class="funnel__container">
-        <p class="funnel__section-label">Lo que dicen nuestras alumnas</p>
-        <div class="funnel__testimonial-card">
-          <i class="fa-solid fa-quote-left funnel__testimonial-quote" aria-hidden="true"></i>
-          <blockquote class="funnel__testimonial-text">
-            "Llevaba años intentando bajar de peso con dietas de moda y siempre recuperaba todo en dos meses.
-            Con el programa de Luisa bajé 9 kilos en 8 semanas y lo más increíble es que ya van 6 meses y los mantuve.
-            Por fin entendí cómo funciona mi cuerpo."
-          </blockquote>
-          <footer class="funnel__testimonial-author">
-            <div class="funnel__testimonial-avatar" aria-hidden="true">
-              <i class="fa-solid fa-user"></i>
-            </div>
-            <div>
-              <strong>Madre de familia, ejecutiva</strong>
-              <span>Participante del programa — 9 kg menos, sin rebote</span>
-            </div>
-          </footer>
-        </div>
-      </div>
-    </section>
-
-    <!-- AUTHORITY — Luisa Pita Bejarano -->
+    <!-- ESPECIALISTAS -->
     <section class="funnel__authority" aria-labelledby="authority-heading">
-      <div class="funnel__container funnel__authority-inner">
-        <div class="funnel__authority-photo-wrap">
-          <div class="funnel__authority-photo-frame">
-            <img :src="LUISA_AUTHORITY" alt="Luisa Pita Bejarano" class="funnel__authority-img" loading="lazy" />
+      <div class="funnel__container">
+        <div class="funnel__authority-inner">
+          <div class="funnel__authority-badge">
+            <i class="fa-solid fa-user-doctor" aria-hidden="true"></i>
           </div>
-        </div>
-        <div class="funnel__authority-content">
-          <p class="funnel__authority-eyebrow">Tu coach de transformación</p>
-          <h2 id="authority-heading" class="funnel__authority-name">Luisa Pita Bejarano</h2>
-          <p class="funnel__authority-role">Coach de Transformación Corporal para Mujeres Ocupadas</p>
-          <p class="funnel__authority-bio">
-            Especializada en ayudar a mujeres adultas ocupadas a perder grasa y tonificar su cuerpo
-            sin dietas imposibles ni rutinas que no encajan en su vida real.
-            Mi método elimina el efecto rebote porque ataca la causa raíz, no los síntomas.
+          <p class="funnel__section-label">Nuestro equipo</p>
+          <h2 id="authority-heading" class="funnel__section-title">
+            Siempre atendido/a por
+            <span class="funnel__section-title-accent">un especialista certificado</span>
+          </h2>
+          <p class="funnel__authority-text">
+            En Inspident, cada paciente es atendido por especialistas con formación avanzada en estética dental
+            y tratamientos faciales. Seguimos protocolos clínicos de última generación para garantizar
+            tu seguridad y los mejores resultados posibles.
           </p>
-          <ul class="funnel__authority-creds" role="list">
-            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i> Especialista en nutrición y hábitos sostenibles</li>
-            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i> Método comprobado: 8 kilos en 8 semanas sin rebote</li>
-            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i> Más de 200 mujeres transformadas con resultados duraderos</li>
+          <ul class="funnel__authority-list" role="list">
+            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i>Especialistas certificados en formación continua</li>
+            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i>Equipos y tecnología de última generación</li>
+            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i>Protocolos de seguridad clínica rigurosos</li>
+            <li><i class="fa-solid fa-check-circle" aria-hidden="true"></i>Atención 100% personalizada por paciente</li>
           </ul>
         </div>
       </div>
@@ -293,20 +314,29 @@ onUnmounted(() => clearInterval(interval))
     <!-- CTA FINAL -->
     <section class="funnel__cta-final" aria-labelledby="cta-final-heading">
       <div class="funnel__container">
+        <span class="funnel__cta-final-eyebrow">
+          <i class="fa-solid fa-clock" aria-hidden="true"></i>
+          Cupos limitados este mes
+        </span>
         <h2 id="cta-final-heading" class="funnel__cta-final-title">
-          ¿Lista para tu transformación?
+          ¿Lista/o para tu transformación?
         </h2>
         <p class="funnel__cta-final-sub">
-          Accede al video y descubre el método exacto que usaron más de 200 mujeres para bajar 8 kilos
-          en 8 semanas — sin pasar hambre, sin rutinas imposibles y sin efecto rebote.
+          Agenda tu consulta ahora y da el primer paso hacia la sonrisa que siempre quisiste.
+          Solo aceptamos pacientes con <strong>$200 o más disponibles</strong> para su tratamiento.
         </p>
-        <button class="funnel__cta-btn" @click="openModal()">
-          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-          QUIERO MI PLAN PERSONALIZADO
+        <button class="funnel__cta-btn funnel__cta-btn--final" @click="openModal()">
+          <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+          AGENDAR MI CITA AHORA
         </button>
+        <div class="funnel__cta-deposit">
+          <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+          <p>Para confirmar tu cita se requiere un pago de <strong>$10 con tarjeta</strong> como garantía
+          de reserva. Este valor se descuenta de tu tratamiento al llegar.</p>
+        </div>
         <p class="funnel__cta-sub">
           <i class="fa-solid fa-lock" aria-hidden="true"></i>
-          Cupos limitados &nbsp;·&nbsp; Acceso inmediato &nbsp;·&nbsp; Sin compromiso
+          Reserva segura &nbsp;·&nbsp; $10 al confirmar &nbsp;·&nbsp; Se descuenta del tratamiento
         </p>
       </div>
     </section>
@@ -314,20 +344,24 @@ onUnmounted(() => clearInterval(interval))
     <!-- FOOTER -->
     <footer class="funnel__footer">
       <div class="funnel__container funnel__footer-inner">
-        <h2 class="funnel__footer-logo-text">LUISA PITA BEJARANO</h2>
         <nav class="funnel__footer-links" aria-label="Legal">
           <RouterLink to="/politicas-privacidad">Política de Privacidad</RouterLink>
           <RouterLink to="/aviso-legal">Aviso Legal</RouterLink>
         </nav>
         <p class="funnel__footer-copy">
-          © {{ new Date().getFullYear() }} LUISA PITA BEJARANO. Todos los derechos reservados.
+          © {{ new Date().getFullYear() }} INSPIDENT. Todos los derechos reservados.
         </p>
       </div>
     </footer>
 
   </div>
 
-  <RegistrationModal :open="modalOpen" @close="modalOpen = false" />
+  <RegistrationModal
+    :open="registrationOpen"
+    @close="registrationOpen = false"
+    @registered="onRegistered"
+  />
+  <CalendarModal :open="calendarOpen" @close="calendarOpen = false" />
 </template>
 
 <style lang="scss" scoped>
@@ -336,104 +370,61 @@ onUnmounted(() => clearInterval(interval))
 
 .funnel {
   background: #ffffff;
-  color: colors.$OS-DARK;
+  color: colors.$INS-DARK;
   min-height: 100vh;
   font-family: fonts.$font-secondary;
 
   &__container {
-    max-width: 900px;
+    max-width: 920px;
     margin: 0 auto;
     padding: 0 1.5rem;
     @media (min-width: 768px) { padding: 0 2rem; }
   }
 }
 
-// ── Top bar ──────────────────────────────────────────────────────────────────
+// ── Topbar ───────────────────────────────────────────────────────────────────
 .funnel__topbar {
-  background: #ffffff;
-  border-bottom: 1px solid #D1FAE5;
-  padding: 0.9rem 1.5rem;
-  display: flex;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 12px rgba(22, 199, 132, 0.06);
+  background: colors.$INS-BLUE;
+  padding: 0.6rem 0;
+  text-align: center;
 }
 
-.funnel__logo {
-  height: 38px;
-  width: auto;
-  object-fit: contain;
-}
-
-// ── Urgency banner ───────────────────────────────────────────────────────────
-.funnel__urgency {
-  background: colors.$OS-NAVY;
-  color: #ffffff;
-  padding: 0.55rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+.funnel__topbar-text {
   font-family: fonts.$font-interface;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
   letter-spacing: 0.02em;
-}
-
-.funnel__urgency-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4ADE80;
-  flex-shrink: 0;
-  animation: dot-pulse 1.5s infinite;
-}
-
-@keyframes dot-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.75); }
-}
-
-.funnel__timer {
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.15rem;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  i { font-size: 0.78rem; }
 }
 
-.funnel__timer-block {
-  display: flex;
-  align-items: baseline;
-  gap: 1px;
-  strong { font-size: 0.95rem; font-weight: 800; }
-  small { font-size: 0.68rem; opacity: 0.75; }
-}
-
-.funnel__timer-sep { font-weight: 800; opacity: 0.5; padding: 0 1px; }
+.funnel__topbar-sep { opacity: 0.55; }
 
 // ── Hero ─────────────────────────────────────────────────────────────────────
 .funnel__hero {
-  padding: 3.5rem 0 3rem;
-  background: linear-gradient(180deg, #F0FFF8 0%, #ffffff 70%);
+  padding: 3.5rem 0 3.5rem;
+  background: linear-gradient(160deg, #EFF6FF 0%, #ffffff 70%);
   text-align: center;
-
   .funnel__eyebrow { margin-left: auto; margin-right: auto; }
   .funnel__pillars { justify-content: center; }
   .funnel__cta-wrap { align-items: center; }
 }
 
-
 .funnel__eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(colors.$OS-RED, 0.06);
-  border: 1px solid rgba(colors.$OS-RED, 0.14);
+  background: rgba(colors.$INS-BLUE, 0.08);
+  border: 1px solid rgba(colors.$INS-BLUE, 0.2);
   border-radius: 999px;
-  padding: 0.35rem 0.85rem;
-  color: colors.$OS-RED;
+  padding: 0.35rem 0.9rem;
+  color: colors.$INS-BLUE;
   font-family: fonts.$font-interface;
   font-size: 0.78rem;
   font-weight: 700;
@@ -445,202 +436,49 @@ onUnmounted(() => clearInterval(interval))
 
 .funnel__headline {
   @include fonts.heading-font(800);
-  font-size: clamp(2rem, 5vw, 3.1rem);
-  line-height: 1.15;
-  color: colors.$OS-DARK;
-  margin: 0 0 1.5rem;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.13;
+  color: colors.$INS-DARK;
+  margin: 0 0 1.1rem;
   letter-spacing: -0.025em;
-
-  &-accent { color: colors.$OS-RED; }
+  &-accent { color: colors.$INS-BLUE; display: block; }
 }
 
-.funnel__vsl-player-container {
-  width: 100%;
-  border-radius: 24px;
-  overflow: hidden;
-  border: 1px solid rgba(colors.$OS-RED, 0.2);
-  box-shadow: 0 40px 100px -20px rgba(0,0,0,0.4);
-  background: #000;
-  line-height: 0;
-
-  @media (max-width: 768px) {
-    border-radius: 12px;
-  }
+.funnel__hero-sub {
+  font-size: 1.05rem;
+  color: #4A5F7A;
+  line-height: 1.65;
+  max-width: 580px;
+  margin: 0 auto 1.75rem;
 }
 
 .funnel__pillars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
   list-style: none;
   padding: 0;
   margin: 0 0 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
 }
 
 .funnel__pillar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 0.93rem;
-  color: #3A4F6A;
-
-  i {
-    color: colors.$OS-BLUE;
-    font-size: 0.82rem;
-    flex-shrink: 0;
-  }
-}
-
-// ── VSL ──────────────────────────────────────────────────────────────────────
-.funnel__vsl-wrap {
-  margin: 2rem auto;
-  max-width: 760px;
-  width: 100%;
-}
-
-.funnel__vsl {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  border: 2px solid rgba(colors.$OS-RED, 0.2);
-  box-shadow: 0 8px 40px rgba(22, 199, 132, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 48px rgba(22, 199, 132, 0.2);
-  }
-  &:focus-visible {
-    outline: 3px solid colors.$OS-RED;
-    outline-offset: 2px;
-  }
-}
-
-.funnel__vsl-bg {
-  position: absolute;
-  inset: 0;
-  background: #0D1117;
-}
-
-.funnel__vsl-thumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  filter: brightness(0.82);
-  transform: scale(1.02);
-  transition: transform 0.5s ease, filter 0.4s ease;
-
-  .funnel__vsl:hover & {
-    transform: scale(1.05);
-    filter: brightness(0.9);
-  }
-}
-
-.funnel__vsl-vignette {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%),
-    linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 30%, transparent 60%, rgba(0,0,0,0.65) 100%);
-  z-index: 1;
-}
-
-.funnel__vsl-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  z-index: 2;
-}
-
-.funnel__vsl-play-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  transition: transform 0.2s ease;
-  .funnel__vsl:hover & { transform: scale(1.06); }
-}
-
-.funnel__vsl-play {
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  background: colors.$OS-RED;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 0 8px rgba(22, 199, 132, 0.25), 0 8px 32px rgba(0, 0, 0, 0.4);
-  transition: box-shadow 0.3s ease;
-
-  .funnel__vsl:hover & {
-    box-shadow: 0 0 0 14px rgba(22, 199, 132, 0.2), 0 12px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  i {
-    color: #ffffff;
-    font-size: 2rem;
-    margin-left: 6px;
-  }
-}
-
-.funnel__vsl-play-label {
-  color: #ffffff;
+  gap: 0.45rem;
   font-family: fonts.$font-interface;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
-  background: rgba(22, 199, 132, 0.85);
-  padding: 0.3rem 0.85rem;
-  border-radius: 999px;
-}
-
-.funnel__vsl-caption {
-  color: rgba(#ffffff, 0.92);
-  font-size: 0.86rem;
+  font-size: 0.83rem;
   font-weight: 600;
-  text-align: center;
-  padding: 0 1.5rem;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
-  max-width: 380px;
-  line-height: 1.45;
-}
-
-.funnel__vsl-duration {
-  position: absolute;
-  top: 0.85rem;
-  right: 0.85rem;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  color: rgba(#ffffff, 0.9);
-  font-family: fonts.$font-interface;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 0.28rem 0.65rem;
+  color: colors.$INS-DARK;
+  background: #ffffff;
+  border: 1.5px solid #DBEAFE;
   border-radius: 999px;
-  i { font-size: 0.7rem; color: colors.$OS-RED; }
+  padding: 0.4rem 0.9rem;
+  i { color: colors.$INS-BLUE; font-size: 0.78rem; }
 }
 
-// ── CTA ──────────────────────────────────────────────────────────────────────
 .funnel__cta-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.75rem;
 }
 
@@ -649,234 +487,306 @@ onUnmounted(() => clearInterval(interval))
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: colors.$OS-RED;
+  background: colors.$INS-BLUE;
   color: #ffffff;
   border: none;
-  border-radius: 12px;
-  padding: 1.1rem 2.5rem;
+  border-radius: 14px;
+  padding: 1.1rem 2.25rem;
   font-family: fonts.$font-accent;
   font-size: 1rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  width: 100%;
-  max-width: 480px;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba(22, 199, 132, 0.35);
-
-  &:hover {
-    background: darken(#16C784, 8%);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 28px rgba(22, 199, 132, 0.45);
-  }
-  &:active { transform: translateY(0); }
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 6px 24px rgba(30, 64, 175, 0.28);
+  &:hover { background: #1E3A8A; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(30, 64, 175, 0.38); }
+  &--final { font-size: 1.05rem; padding: 1.2rem 2.5rem; }
 }
 
 .funnel__cta-sub {
+  font-family: fonts.$font-interface;
+  font-size: 0.75rem;
+  color: #6B7FA0;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.4rem;
-  font-size: 0.78rem;
-  color: #8A9BB5;
+  justify-content: center;
   margin: 0;
   i { font-size: 0.72rem; }
 }
 
-// ── Stats ────────────────────────────────────────────────────────────────────
-.funnel__stats {
-  background: colors.$OS-NAVY;
-  padding: 3rem 0;
-}
-
+// ── Section labels/titles shared ─────────────────────────────────────────────
 .funnel__section-label {
   font-family: fonts.$font-interface;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: colors.$OS-NAVY;
-  margin: 0 0 1rem;
-
-  &--light { color: rgba(#ffffff, 0.55); }
-}
-
-.funnel__stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  @media (max-width: 580px) {
-    grid-template-columns: 1fr;
-    gap: 1.75rem;
-  }
-}
-
-.funnel__stat { text-align: center; }
-
-.funnel__stat-icon {
-  font-size: 1.6rem;
-  color: rgba(#ffffff, 0.35);
-  margin-bottom: 0.5rem;
-}
-
-.funnel__stat-number {
-  display: block;
-  @include fonts.heading-font(800);
-  font-size: 2.6rem;
-  color: #ffffff;
-  line-height: 1;
-  margin-bottom: 0.4rem;
-  letter-spacing: -0.03em;
-}
-
-.funnel__stat-text {
-  font-size: 0.83rem;
-  color: rgba(#ffffff, 0.7);
-  line-height: 1.45;
-  margin: 0;
-}
-
-// ── Problem ──────────────────────────────────────────────────────────────────
-.funnel__problem {
-  padding: 4rem 0;
-  background: #ffffff;
+  color: colors.$INS-BLUE;
+  margin: 0 0 0.65rem;
+  &--light { color: rgba(#ffffff, 0.7); }
 }
 
 .funnel__section-title {
   @include fonts.heading-font(800);
-  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-  color: colors.$OS-DARK;
-  margin: 0.25rem 0 2rem;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: colors.$INS-DARK;
+  margin: 0 0 2.5rem;
   line-height: 1.2;
   letter-spacing: -0.02em;
+  &-accent { color: colors.$INS-BLUE; }
+  &--light { color: #ffffff; margin-bottom: 2rem; }
+  &-accent--light { color: rgba(#ffffff, 0.85); }
 }
 
-.funnel__problem-grid {
+// ── Services ─────────────────────────────────────────────────────────────────
+.funnel__services {
+  padding: 4.5rem 0;
+  background: colors.$INS-SURFACE;
+}
+
+.funnel__services-grid {
+  display: grid;
+  gap: 1.25rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.funnel__service-card {
+  background: #ffffff;
+  border: 1.5px solid #DBEAFE;
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.funnel__problem-item {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  padding: 1.25rem;
-  background: #F0FFF8;
-  border: 1px solid #D1FAE5;
-  border-radius: 12px;
-
-  strong {
-    display: block;
-    color: colors.$OS-DARK;
-    font-size: 0.93rem;
-    font-weight: 700;
-    margin-bottom: 0.2rem;
-  }
-  p {
-    font-size: 0.86rem;
-    color: #4A5F7A;
-    line-height: 1.5;
-    margin: 0;
-  }
-}
-
-.funnel__problem-icon {
-  font-size: 1.2rem;
-  color: colors.$OS-RED;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-// ── Methodology ──────────────────────────────────────────────────────────────
-.funnel__method {
-  padding: 4rem 0;
-  background: colors.$LPB-LIGHT;
-}
-
-.funnel__method-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  @media (max-width: 700px) { grid-template-columns: 1fr; }
-}
-
-.funnel__method-card {
-  background: #ffffff;
-  border: 1px solid #D1FAE5;
-  border-radius: 16px;
-  padding: 1.75rem 1.5rem;
+  gap: 0.85rem;
   position: relative;
-  box-shadow: 0 2px 12px rgba(22, 199, 132, 0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
+  &:hover { box-shadow: 0 8px 32px rgba(30, 64, 175, 0.1); transform: translateY(-2px); }
+  &--highlight {
+    border-color: colors.$INS-BLUE;
+    box-shadow: 0 4px 20px rgba(30, 64, 175, 0.1);
+  }
 }
 
-.funnel__method-num {
-  position: absolute;
-  top: 1rem;
-  right: 1.25rem;
-  @include fonts.heading-font(800);
-  font-size: 2.5rem;
-  color: rgba(colors.$OS-NAVY, 0.07);
-  line-height: 1;
-  user-select: none;
+.funnel__service-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: colors.$INS-BLUE;
+  color: #ffffff;
+  font-family: fonts.$font-interface;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  width: fit-content;
+  i { font-size: 0.65rem; }
 }
 
-.funnel__method-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: colors.$OS-RED;
+.funnel__service-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: colors.$INS-LIGHT;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
-  i { color: #ffffff; font-size: 1.1rem; }
+  i { color: colors.$INS-BLUE; font-size: 1.3rem; }
 }
 
-.funnel__method-title {
+.funnel__service-name {
   @include fonts.heading-font(700);
-  font-size: 0.97rem;
-  color: colors.$OS-DARK;
-  margin: 0 0 0.5rem;
-}
-
-.funnel__method-body {
-  font-size: 0.86rem;
-  color: #4A5F7A;
-  line-height: 1.55;
+  font-size: 1.15rem;
+  color: colors.$INS-DARK;
   margin: 0;
 }
 
-// ── Testimonial ──────────────────────────────────────────────────────────────
-.funnel__testimonial {
-  padding: 4rem 0;
+.funnel__service-desc {
+  font-size: 0.875rem;
+  color: #4A5F7A;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.funnel__service-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: #3A4F6A;
+    i { color: colors.$INS-BLUE; font-size: 0.78rem; flex-shrink: 0; }
+  }
+}
+
+.funnel__service-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: colors.$INS-LIGHT;
+  color: colors.$INS-BLUE;
+  border: 1.5px solid #BFDBFE;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: fonts.$font-accent;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  margin-top: 0.5rem;
+  &:hover { background: colors.$INS-BLUE; color: #ffffff; border-color: colors.$INS-BLUE; }
+  i { font-size: 0.82rem; }
+}
+
+// ── Steps ────────────────────────────────────────────────────────────────────
+.funnel__steps {
+  padding: 4.5rem 0;
+  background: colors.$INS-BLUE;
+  text-align: center;
+}
+
+.funnel__steps-grid {
+  display: grid;
+  gap: 2.5rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+}
+
+.funnel__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.funnel__step-num {
+  font-family: fonts.$font-interface;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: rgba(#ffffff, 0.45);
+}
+
+.funnel__step-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: rgba(#ffffff, 0.15);
+  border: 1.5px solid rgba(#ffffff, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i { color: #ffffff; font-size: 1.4rem; }
+}
+
+.funnel__step-title {
+  @include fonts.heading-font(700);
+  font-size: 1rem;
+  color: #ffffff;
+  margin: 0;
+}
+
+.funnel__step-desc {
+  font-size: 0.84rem;
+  color: rgba(#ffffff, 0.75);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 220px;
+}
+
+// ── Stats ────────────────────────────────────────────────────────────────────
+.funnel__stats {
+  padding: 3rem 0;
   background: #ffffff;
+  border-top: 1px solid #EFF6FF;
+  border-bottom: 1px solid #EFF6FF;
 }
 
-.funnel__testimonial-card {
-  background: #F0FFF8;
-  border: 1px solid rgba(colors.$OS-RED, 0.1);
-  border-left: 4px solid colors.$OS-RED;
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 720px;
-  margin: 0 auto;
-  box-shadow: 0 4px 24px rgba(22, 199, 132, 0.07);
+.funnel__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+  @media (min-width: 640px) { grid-template-columns: repeat(4, 1fr); }
 }
 
-.funnel__testimonial-quote {
-  font-size: 2.2rem;
-  color: rgba(colors.$OS-RED, 0.12);
-  display: block;
-  margin-bottom: 0.75rem;
+.funnel__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.funnel__stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: colors.$INS-LIGHT;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i { color: colors.$INS-BLUE; font-size: 1.1rem; }
+}
+
+.funnel__stat-number {
+  @include fonts.heading-font(800);
+  font-size: 1.65rem;
+  color: colors.$INS-DARK;
   line-height: 1;
 }
 
+.funnel__stat-text {
+  font-size: 0.8rem;
+  color: #6B7FA0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// ── Testimonials ─────────────────────────────────────────────────────────────
+.funnel__testimonials {
+  padding: 4.5rem 0;
+  background: colors.$INS-SURFACE;
+}
+
+.funnel__testimonials-grid {
+  display: grid;
+  gap: 1.25rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.funnel__testimonial {
+  background: #ffffff;
+  border: 1px solid #DBEAFE;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 4px 20px rgba(30, 64, 175, 0.08); }
+}
+
+.funnel__testimonial-stars {
+  display: flex;
+  gap: 0.2rem;
+  i { color: #FBBF24; font-size: 0.85rem; }
+}
+
 .funnel__testimonial-text {
-  font-size: 1.1rem;
-  color: colors.$OS-DARK;
+  font-size: 0.875rem;
+  color: #3A4F6A;
   line-height: 1.65;
-  margin: 0 0 1.5rem;
+  margin: 0;
+  flex: 1;
   font-style: italic;
 }
 
@@ -884,153 +794,43 @@ onUnmounted(() => clearInterval(interval))
   display: flex;
   align-items: center;
   gap: 0.75rem;
-
-  strong { display: block; color: colors.$OS-DARK; font-size: 0.88rem; font-weight: 700; }
-  span { font-size: 0.78rem; color: #8A9BB5; }
 }
 
 .funnel__testimonial-avatar {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: colors.$OS-RED;
+  background: colors.$INS-LIGHT;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  i { color: #ffffff; font-size: 1.2rem; }
+  i { color: colors.$INS-BLUE; font-size: 1rem; }
+}
+
+.funnel__testimonial-name {
+  display: block;
+  font-family: fonts.$font-interface;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: colors.$INS-DARK;
+}
+
+.funnel__testimonial-result {
+  font-size: 0.75rem;
+  color: colors.$INS-BLUE;
+  font-weight: 600;
 }
 
 // ── Authority ────────────────────────────────────────────────────────────────
 .funnel__authority {
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #F0FFF8 0%, #F0FFF8 100%);
-  border-top: 1px solid #D1FAE5;
-  border-bottom: 1px solid #D1FAE5;
+  padding: 4.5rem 0;
+  background: #ffffff;
 }
 
 .funnel__authority-inner {
-  display: flex;
-  gap: 2.5rem;
-  align-items: flex-start;
-  @media (max-width: 640px) { flex-direction: column; align-items: center; }
-}
-
-.funnel__authority-photo-wrap {
-  flex-shrink: 0;
-  @media (max-width: 640px) { width: 100%; }
-}
-
-.funnel__authority-photo-frame {
-  width: 260px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(22, 199, 132, 0.2), 0 4px 16px rgba(0,0,0,0.06);
-  border: 3px solid rgba(22, 199, 132, 0.12);
-  @media (max-width: 640px) { width: 100%; max-width: 280px; margin: 0 auto; }
-}
-
-.funnel__authority-img {
-  width: 100%;
-  height: 340px;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-}
-
-.funnel__authority-content { flex: 1; }
-
-.funnel__authority-eyebrow {
-  font-family: fonts.$font-interface;
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: colors.$OS-BLUE;
-  margin: 0 0 0.35rem;
-}
-
-.funnel__authority-name {
-  @include fonts.heading-font(800);
-  font-size: 2rem;
-  color: colors.$OS-DARK;
-  margin: 0 0 0.2rem;
-  letter-spacing: -0.02em;
-}
-
-.funnel__authority-role {
-  font-size: 0.88rem;
-  color: #8A9BB5;
-  margin: 0 0 1rem;
-}
-
-.funnel__authority-bio {
-  font-size: 0.93rem;
-  color: #3A4F6A;
-  line-height: 1.65;
-  margin: 0 0 1rem;
-  strong { color: colors.$OS-DARK; font-weight: 700; }
-}
-
-.funnel__authority-creds {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.86rem;
-    color: #3A4F6A;
-    i { color: colors.$OS-RED; font-size: 0.82rem; flex-shrink: 0; }
-  }
-}
-
-// ── CTA Final ────────────────────────────────────────────────────────────────
-.funnel__cta-final {
-  padding: 4.5rem 0;
-  background: colors.$OS-NAVY;
-  text-align: center;
-
-  .funnel__section-label { color: rgba(#ffffff, 0.5); }
-
-  .funnel__cta-btn {
-    margin: 0 auto 1rem;
-    background: colors.$OS-RED;
-    box-shadow: 0 4px 24px rgba(22, 199, 132, 0.4);
-    &:hover { background: darken(#16C784, 8%); }
-  }
-
-  .funnel__cta-sub { color: rgba(#ffffff, 0.5); }
-}
-
-.funnel__cta-final-title {
-  @include fonts.heading-font(800);
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  color: #ffffff;
-  margin: 0 0 0.75rem;
-  letter-spacing: -0.025em;
-}
-
-.funnel__cta-final-sub {
-  font-size: 0.97rem;
-  color: rgba(#ffffff, 0.72);
-  margin: 0 auto 2rem;
-  max-width: 520px;
-  line-height: 1.55;
-}
-
-// ── Footer ───────────────────────────────────────────────────────────────────
-.funnel__footer {
-  background: colors.$OS-DARK;
-  padding: 2rem 1.5rem;
-}
-
-.funnel__footer-inner {
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1038,30 +838,137 @@ onUnmounted(() => clearInterval(interval))
   text-align: center;
 }
 
-.funnel__footer-logo {
-  height: 30px;
-  width: auto;
-  filter: brightness(100);
-  opacity: 0.6;
-  object-fit: contain;
+.funnel__authority-badge {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: colors.$INS-LIGHT;
+  border: 2px solid #DBEAFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+  i { color: colors.$INS-BLUE; font-size: 1.8rem; }
+}
+
+.funnel__authority-text {
+  font-size: 0.93rem;
+  color: #4A5F7A;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.funnel__authority-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  text-align: left;
+  width: 100%;
+  max-width: 420px;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    color: #3A4F6A;
+    i { color: colors.$INS-BLUE; font-size: 0.9rem; flex-shrink: 0; }
+  }
+}
+
+// ── CTA Final ────────────────────────────────────────────────────────────────
+.funnel__cta-final {
+  padding: 5rem 0;
+  background: linear-gradient(155deg, #EFF6FF 0%, #DBEAFE 100%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .funnel__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+}
+
+.funnel__cta-final-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(colors.$INS-BLUE, 0.1);
+  border: 1px solid rgba(colors.$INS-BLUE, 0.22);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  color: colors.$INS-BLUE;
+  font-family: fonts.$font-interface;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  i { font-size: 0.75rem; }
+}
+
+.funnel__cta-final-title {
+  @include fonts.heading-font(800);
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  color: colors.$INS-DARK;
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.funnel__cta-final-sub {
+  font-size: 0.95rem;
+  color: #4A5F7A;
+  line-height: 1.65;
+  max-width: 520px;
+  margin: 0;
+  strong { color: colors.$INS-DARK; }
+}
+
+.funnel__cta-deposit {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1.5px solid #DBEAFE;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  max-width: 460px;
+  text-align: left;
+  i { color: colors.$INS-BLUE; font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+  p { font-size: 0.83rem; color: #4A5F7A; line-height: 1.5; margin: 0; }
+  strong { color: colors.$INS-DARK; }
+}
+
+// ── Footer ───────────────────────────────────────────────────────────────────
+.funnel__footer {
+  padding: 1.5rem;
+  border-top: 1px solid #EFF6FF;
+  background: #ffffff;
+}
+
+.funnel__footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
 }
 
 .funnel__footer-links {
   display: flex;
   gap: 1.5rem;
-
-  a {
-    font-size: 0.78rem;
-    color: rgba(#ffffff, 0.45);
-    text-decoration: none;
-    transition: color 0.2s;
-    &:hover { color: rgba(#ffffff, 0.85); }
-  }
+  a { font-size: 0.76rem; color: #9BB0CC; text-decoration: none; &:hover { color: colors.$INS-DARK; } }
 }
 
 .funnel__footer-copy {
   font-size: 0.72rem;
-  color: rgba(#ffffff, 0.28);
+  color: #C0D0E0;
   margin: 0;
 }
 </style>

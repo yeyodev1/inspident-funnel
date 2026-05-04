@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import gsap from 'gsap';
-
-/**
- * BookedHero.vue
- * Displays the success confirmation with GSAP entry animations.
- */
+import { onMounted, ref } from 'vue'
+import gsap from 'gsap'
 
 const props = defineProps({
   contactName: {
@@ -13,29 +8,22 @@ const props = defineProps({
     required: false,
     default: '',
   },
-});
+})
 
-const heroContent = ref<HTMLElement | null>(null);
-const checkIcon = ref<HTMLElement | null>(null);
+const heroContent = ref<HTMLElement | null>(null)
+const checkIcon = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   if (heroContent.value && checkIcon.value) {
-    const tl = gsap.timeline();
-    
-    // Animar el icono de check
-    tl.fromTo(checkIcon.value, 
-      { scale: 0, rotation: -45, opacity: 0 }, 
-      { scale: 1, rotation: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.7)' }
-    );
-
-    // Animar el texto con stagger
-    tl.fromTo(heroContent.value.querySelectorAll('.animate-up'), 
-      { y: 30, opacity: 0 }, 
-      { y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: 'power3.out' },
-      '-=0.4'
-    );
+    const tl = gsap.timeline()
+    tl.from(checkIcon.value, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(1.7)' })
+    tl.from(
+      heroContent.value.querySelectorAll('.animate-up'),
+      { y: 20, opacity: 0, duration: 0.45, stagger: 0.12, ease: 'power2.out' },
+      '-=0.2'
+    )
   }
-});
+})
 </script>
 
 <template>
@@ -48,84 +36,78 @@ onMounted(() => {
       <template v-if="props.contactName">¡Listo, {{ props.contactName }}!</template>
       <template v-else>¡Tu cita está confirmada!</template>
     </h1>
-    
+
     <p class="booked-hero__subtitle animate-up">
-      En breve recibirás un correo con todos los detalles. Luisa te contactará
-      para acompañarte en cada paso de tu transformación de 8 semanas.
+      En breve recibirás la confirmación en tu correo y WhatsApp con todos los detalles
+      de tu cita. Nuestro equipo está listo para transformar tu sonrisa.
     </p>
+
+    <div class="booked-hero__deposit animate-up">
+      <i class="fa-solid fa-credit-card"></i>
+      <p>Recuerda llevar <strong>$10 en tarjeta</strong> el día de tu cita como garantía de reserva.
+         Este valor se descuenta de tu tratamiento.</p>
+    </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as colors;
 @use '@/styles/fonts.modules.scss' as fonts;
+@use '@/styles/colorVariables.module.scss' as colors;
 
 .booked-hero {
-  text-align: center;
   padding: 2.5rem 0 1.5rem;
-  width: 100%;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-
-  @media (min-width: 768px) {
-    padding: 4.5rem 0 2.5rem;
-    gap: 1.75rem;
-  }
+  gap: 1rem;
 
   &__icon-wrap {
-    width: 68px;
-    height: 68px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: rgba(colors.$LPB-PINK, 0.08);
+    background: #EFF6FF;
+    border: 2.5px solid #DBEAFE;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid rgba(colors.$LPB-PINK, 0.3);
-    box-shadow: 0 0 30px rgba(colors.$LPB-PINK, 0.1);
-    margin-bottom: 0.5rem;
-
-    @media (min-width: 768px) {
-      width: 90px;
-      height: 90px;
-      margin-bottom: 0.75rem;
-    }
   }
 
   &__check-icon {
-    font-size: 2.25rem;
-    color: colors.$LPB-PINK;
-    filter: drop-shadow(0 0 12px rgba(colors.$LPB-PINK, 0.5));
-
-    @media (min-width: 768px) {
-      font-size: 3.25rem;
-    }
+    font-size: 2.2rem;
+    color: colors.$INS-BLUE;
   }
 
   &__title {
     @include fonts.heading-font(800);
-    font-size: clamp(1.85rem, 8vw, 3.5rem);
-    line-height: 1.1;
+    font-size: clamp(1.7rem, 4vw, 2.2rem);
+    color: colors.$INS-DARK;
     margin: 0;
-    background: linear-gradient(135deg, colors.$white 20%, colors.$LPB-PINK 70%, colors.$LPB-PURPLE);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
   }
 
   &__subtitle {
-    @include fonts.body-font(400);
-    font-size: 0.95rem;
-    color: rgba(colors.$white, 0.7);
+    font-size: 0.93rem;
+    color: #4A5F7A;
+    line-height: 1.65;
     margin: 0;
-    line-height: 1.6;
-    max-width: 540px;
+    max-width: 480px;
+  }
 
-    @media (min-width: 768px) {
-      font-size: 1.15rem;
-      line-height: 1.7;
-    }
+  &__deposit {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    background: #EFF6FF;
+    border: 1.5px solid #DBEAFE;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    max-width: 420px;
+    text-align: left;
+    i { color: colors.$INS-BLUE; font-size: 0.95rem; margin-top: 2px; flex-shrink: 0; }
+    p { font-size: 0.82rem; color: #4A5F7A; line-height: 1.5; margin: 0; }
+    strong { color: colors.$INS-DARK; }
   }
 }
 </style>

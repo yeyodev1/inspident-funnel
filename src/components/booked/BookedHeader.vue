@@ -3,33 +3,36 @@
 
 <template>
   <header class="booked-header">
-    <h2 class="booked-header__logo-text">LUISA PITA BEJARANO</h2>
+    <span class="booked-header__logo">INSPIDENT</span>
+    <span class="booked-header__tagline">Estética Dental Profesional</span>
   </header>
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/colorVariables.module.scss' as colors;
 @use '@/styles/fonts.modules.scss' as fonts;
+@use '@/styles/colorVariables.module.scss' as colors;
 
 .booked-header {
-  width: 100%;
-  padding: 0.9rem 1.5rem;
-  display: flex;
-  justify-content: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #EFF6FF;
   background: #ffffff;
-  border-bottom: 1px solid #D1FAE5;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 8px rgba(22, 199, 132, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 
-  &__logo-text {
-    font-family: fonts.$font-principal;
-    font-weight: 800;
+  &__logo {
+    @include fonts.heading-font(800);
     font-size: 1.1rem;
-    letter-spacing: 0.05em;
-    color: colors.$LPB-DARK;
-    margin: 0;
+    color: colors.$INS-BLUE;
+    letter-spacing: 0.04em;
+  }
+
+  &__tagline {
+    font-family: fonts.$font-interface;
+    font-size: 0.72rem;
+    color: #8A9BB5;
+    font-weight: 500;
+    letter-spacing: 0.03em;
   }
 }
 </style>
